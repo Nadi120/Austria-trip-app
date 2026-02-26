@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1f5233">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Austria Trip">
+<meta name="description" content="אוסטריה & בווריה — יולי 2026">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>טיול יולי 2026 | אוסטריה ובוואריה</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+:root {
+  --pine:    #14321f;
+  --forest:  #1f5233;
+  --sage:    #5a9470;
+  --mist:    #b8d4c0;
+  --cream:   #f6f1e7;
+  --warm:    #ede7d9;
+  --gold:    #c49a2b;
+  --gold-lt: #f0d483;
+  --lake:    #2e7d9e;
+  --sky:     #cce4f0;
+  --text:    #18231c;
+  --mid:     #3d5a46;
+  --light:   #7aaa8c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Heebo',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+/* ─── HERO ─── */
+.hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(175deg,#0d2317 0%,#1a4029 45%,#2d6b45 100%);
+  padding:56px 20px 48px;text-align:center;
+}
+.hero-peaks{
+  position:absolute;bottom:0;left:0;right:0;height:90px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 90'%3E%3Cpath d='M0,90 L0,60 L120,10 L220,50 L340,0 L440,40 L560,5 L660,45 L780,8 L880,42 L1000,2 L1100,38 L1200,12 L1200,90Z' fill='rgba(246,241,231,0.07)'/%3E%3Cpath d='M0,90 L0,75 L80,40 L180,70 L290,30 L400,65 L510,25 L620,60 L730,28 L840,58 L950,22 L1060,55 L1200,30 L1200,90Z' fill='rgba(246,241,231,0.05)'/%3E%3C/svg%3E") no-repeat bottom / cover;
+}
+.hero-badge{
+  display:inline-block;
+  background:rgba(196,154,43,0.18);border:1px solid rgba(196,154,43,0.6);
+  color:var(--gold-lt);font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  padding:6px 18px;border-radius:20px;margin-bottom:18px;
+}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;font-size:clamp(32px,7vw,60px);
+  color:#fff;font-weight:700;line-height:1.1;margin-bottom:10px;
+}
+.hero h1 em{color:var(--gold-lt);font-style:normal;}
+.hero-sub{color:var(--mist);font-size:14px;letter-spacing:1.5px;font-weight:300;margin-bottom:24px;}
+.pills{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;position:relative;z-index:2;}
+
+/* ATTRACTION PILLS at top */
+.pill{
+  display:flex;align-items:center;gap:7px;
+  padding:8px 16px;border-radius:24px;
+  font-size:12px;font-weight:700;letter-spacing:0.3px;
+  cursor:pointer;text-decoration:none;
+  transition:all .2s;border:none;font-family:'Heebo',sans-serif;
+}
+.pill:hover{transform:translateY(-2px);filter:brightness(1.1);}
+.pill-gold{background:var(--gold);color:var(--pine);}
+.pill-lake{background:var(--lake);color:#fff;}
+.pill-forest{background:var(--forest);color:#fff;}
+.pill-dark{background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25);}
+.pill .pill-icon{font-size:14px;}
+
+/* ─── TABS BAR ─── */
+.tab-bar{
+  background:var(--pine);position:sticky;top:0;z-index:200;
+  box-shadow:0 3px 20px rgba(0,0,0,0.4);
+  overflow-x:auto;scrollbar-width:none;
+}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-list{display:flex;gap:0;padding:0;min-width:max-content;}
+.tab-btn{
+  background:transparent;border:none;border-bottom:3px solid transparent;
+  color:rgba(255,255,255,0.5);font-family:'Heebo',sans-serif;
+  font-size:11px;font-weight:600;padding:13px 16px 10px;
+  cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;gap:2px;min-width:72px;
+  letter-spacing:0.3px;white-space:nowrap;
+}
+.tab-btn:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.05);}
+.tab-btn.active{color:#fff;border-bottom-color:var(--gold);background:rgba(255,255,255,0.07);}
+.tab-icon{font-size:15px;line-height:1;}
+.tab-lbl{font-size:10px;opacity:0.75;}
+
+/* ─── OVERVIEW MAP BTN ─── */
+.overview-strip{
+  background:linear-gradient(90deg,var(--forest),var(--pine));
+  padding:10px 16px;display:flex;justify-content:center;align-items:center;gap:10px;
+}
+.overview-btn{
+  display:flex;align-items:center;gap:8px;
+  background:var(--gold);color:var(--pine);
+  border:none;font-family:'Heebo',sans-serif;font-size:13px;font-weight:800;
+  padding:10px 24px;border-radius:24px;cursor:pointer;
+  transition:all .2s;letter-spacing:0.3px;
+}
+.overview-btn:hover{transform:scale(1.04);filter:brightness(1.1);}
+
+/* ─── PAGE CONTENT ─── */
+.content{max-width:860px;margin:0 auto;padding:24px 16px 80px;}
+
+/* ─── DAY PANELS ─── */
+.day-panel{display:none;}
+.day-panel.active{display:block;}
+
+/* DAY HEADER CARD */
+.day-hdr{
+  border-radius:20px;overflow:hidden;margin-bottom:24px;
+  background:linear-gradient(135deg,var(--pine) 0%,var(--forest) 60%,#2d6b45 100%);
+  padding:28px 24px;position:relative;
+}
+.day-hdr::before{
+  content:attr(data-bg);position:absolute;right:-10px;bottom:-15px;
+  font-size:100px;opacity:.07;line-height:1;pointer-events:none;
+}
+.day-hdr-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px;}
+.day-num{
+  font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:700;
+  color:var(--gold);line-height:1;flex-shrink:0;
+}
+.day-meta{color:#fff;}
+.day-meta .date{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mist);margin-bottom:5px;}
+.day-meta h2{font-size:19px;font-weight:700;line-height:1.2;}
+.breadcrumb{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  font-size:12px;color:var(--mist);
+}
+.breadcrumb .arrow{color:var(--gold);font-size:11px;}
+.breadcrumb .node{
+  background:rgba(255,255,255,0.1);padding:3px 10px;border-radius:10px;
+  border:1px solid rgba(255,255,255,0.15);
+}
+
+/* MAP BUTTON + EMBED */
+.map-toggle{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.25);
+  font-family:'Heebo',sans-serif;font-size:12px;font-weight:700;
+  padding:8px 18px;border-radius:12px;cursor:pointer;transition:all .2s;
+  letter-spacing:0.3px;margin-top:6px;
+}
+.map-toggle:hover{background:rgba(255,255,255,0.2);}
+.map-wrap{
+  display:none;border-radius:16px;overflow:hidden;
+  height:340px;margin:16px 0 24px;
+  border:2px solid var(--mist);box-shadow:0 4px 24px rgba(0,0,0,0.12);
+}
+.map-wrap.open{display:block;}
+.map-wrap .leaflet-map{width:100%;height:100%;}
+
+/* ─── STOPS ─── */
+.section-label{
+  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--mid);margin-bottom:14px;padding-right:4px;font-weight:600;
+}
+.stops{display:flex;flex-direction:column;gap:0;margin-bottom:28px;}
+.stop{display:grid;grid-template-columns:50px 1fr;gap:0 14px;position:relative;}
+.stop:not(:last-child)::after{
+  content:'';position:absolute;right:24px;top:54px;bottom:0;
+  width:2px;background:linear-gradient(to bottom,var(--mist) 0%,transparent 100%);
+  z-index:0;
+}
+.stop-left{display:flex;flex-direction:column;align-items:center;padding-top:4px;position:relative;z-index:1;}
+.stop-dot{
+  width:46px;height:46px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:19px;
+  flex-shrink:0;background:var(--warm);border:2.5px solid var(--mist);
+}
+.stop-dot.s-start{background:var(--forest);border-color:var(--forest);}
+.stop-dot.s-end{background:var(--pine);border-color:var(--pine);}
+.stop-dot.s-must{background:var(--gold);border-color:var(--gold);}
+.stop-dot.s-lake{background:var(--lake);border-color:var(--lake);}
+.stop-right{padding:4px 0 20px;}
+.stop-time{font-size:10px;color:var(--sage);font-weight:700;letter-spacing:.5px;margin-bottom:3px;}
+.stop-card{
+  background:#fff;border-radius:14px;padding:14px 16px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.055);
+  border-right:3px solid var(--mist);
+}
+.stop-card.must{border-right-color:var(--gold);}
+.stop-card.lake{border-right-color:var(--lake);}
+.stop-card h3{font-size:15px;font-weight:700;color:var(--pine);margin-bottom:5px;line-height:1.3;}
+.stop-card p{font-size:13px;color:var(--mid);line-height:1.55;}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.tag{
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:8px;letter-spacing:.3px;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.tag-gold{background:#fdf3d1;color:#8a6500;}
+.tag-green{background:#d4ede0;color:#1a5c36;}
+.tag-blue{background:#d0e8f2;color:#1a5c7a;}
+.tag-red{background:#fde8e8;color:#9b1c1c;}
+
+/* attraction link button inside stop */
+.attr-link{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--forest);color:#fff;border:none;
+  font-family:'Heebo',sans-serif;font-size:11px;font-weight:700;
+  padding:5px 12px;border-radius:8px;cursor:pointer;text-decoration:none;
+  transition:all .2s;margin-top:8px;letter-spacing:.3px;
+}
+.attr-link:hover{background:var(--pine);transform:translateX(-2px);}
+.attr-link.gold{background:var(--gold);color:var(--pine);}
+.attr-link.blue{background:var(--lake);color:#fff;}
+
+/* ─── SLEEP CARD ─── */
+.sleep-card{
+  display:flex;align-items:flex-start;gap:14px;
+  background:linear-gradient(135deg,var(--pine),var(--forest));
+  border-radius:16px;padding:18px 20px;margin-bottom:24px;
+  box-shadow:0 4px 18px rgba(20,50,31,0.18);
+}
+.sleep-icon{font-size:32px;flex-shrink:0;margin-top:2px;}
+.sleep-info{flex:1;}
+.sleep-info h4{font-size:14px;font-weight:800;color:#fff;letter-spacing:0.2px;}
+.sleep-info p{font-size:12px;color:var(--mist);margin-top:3px;line-height:1.5;}
+.sleep-price{
+  display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;
+}
+.price-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(196,154,43,0.22);border:1px solid rgba(240,212,131,0.4);
+  color:var(--gold-lt);font-size:11px;font-weight:800;
+  padding:4px 10px;border-radius:10px;letter-spacing:0.3px;
+}
+.price-chip .pc-flag{font-size:13px;}
+
+/* ─── TIPS ─── */
+.tips{
+  background:linear-gradient(135deg,#fdf9ec,#faf4df);
+  border:1.5px solid rgba(196,154,43,.3);
+  border-radius:14px;padding:16px 20px;margin-bottom:8px;
+}
+.tips h4{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:700;}
+.tips li{font-size:12.5px;color:var(--mid);padding:3px 0;list-style:none;}
+.tips li::before{content:'✦ ';color:var(--gold);}
+
+/* ─── OPTIONS BOX ─── */
+.options-box{
+  background:linear-gradient(135deg,#e8f0f5,#ddeaf4);
+  border:1.5px solid var(--sky);border-radius:14px;
+  padding:16px 20px;margin-bottom:24px;
+}
+.options-box h4{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--lake);margin-bottom:10px;font-weight:700;}
+.opt-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:13px;color:var(--mid);border-bottom:1px solid rgba(0,0,0,0.05);}
+.opt-item:last-child{border:none;}
+.opt-badge{font-size:16px;flex-shrink:0;line-height:1.3;}
+
+/* ─── OVERLAY ─── */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.75);z-index:999;
+  justify-content:center;align-items:center;padding:16px;
+}
+.overlay.open{display:flex;}
+.overlay-box{
+  background:var(--cream);border-radius:20px;
+  padding:28px 24px;max-width:820px;width:100%;
+  max-height:88vh;overflow-y:auto;position:relative;
+}
+.ov-close{
+  position:absolute;top:16px;left:16px;width:34px;height:34px;
+  background:var(--forest);color:#fff;border:none;border-radius:50%;
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.ov-title{
+  font-family:'Cormorant Garamond',serif;font-size:26px;
+  font-weight:700;color:var(--pine);text-align:center;margin-bottom:6px;
+}
+.ov-sub{text-align:center;font-size:13px;color:var(--mid);margin-bottom:20px;}
+.ov-map-wrap{border-radius:14px;overflow:hidden;height:380px;margin-bottom:20px;border:2px solid var(--mist);}
+.ov-map-wrap .leaflet-map{width:100%;height:100%;}
+.ov-table{width:100%;border-collapse:collapse;font-size:13px;}
+.ov-table th{background:var(--forest);color:#fff;padding:10px 12px;text-align:right;font-size:11px;font-weight:700;letter-spacing:.5px;}
+.ov-table td{padding:10px 12px;border-bottom:1px solid #dde8e2;vertical-align:middle;}
+.ov-table tr:nth-child(even) td{background:#f2f8f4;}
+.ov-table .ov-day{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);}
+.ov-table .must-tag{color:var(--gold);font-weight:700;}
+.ov-legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:14px;}
+.ov-leg-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mid);}
+.ov-leg-dot{width:10px;height:10px;border-radius:50%;}
+
+@media(max-width:580px){
+  .day-num{font-size:48px;}
+  .stop{grid-template-columns:42px 1fr;}
+  .stop-dot{width:38px;height:38px;font-size:16px;}
+  .stop:not(:last-child)::after{right:20px;}
+  .day-hdr{padding:20px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-badge">15 – 24 יולי 2026 · 10 ימים</div>
+  <h1>אוסטריה <em>&</em> בוואריה</h1>
+  <p class="hero-sub">מינכן · זלצבורג · פלכאו · אינסברוק · אלגאו</p>
+  <div class="pills">
+    <a class="pill pill-gold" href="https://www.aqua-dome.at/en/" target="_blank"><span class="pill-icon">💧</span> Aqua Dome</a>
+    <a class="pill pill-forest" href="https://www.hornpark.at" target="_blank"><span class="pill-icon">🌲</span> פארק חבלים</a>
+    <a class="pill pill-lake" href="https://www.alpinecoaster.at" target="_blank"><span class="pill-icon">🛷</span> מזחלת הרים</a>
+    <a class="pill pill-dark" href="https://www.flachau.com/en/summer/e-mountain-biking/" target="_blank"><span class="pill-icon">🚵</span> E-Bike פלכאו</a>
+    <a class="pill pill-dark" href="https://www.salzwelten.at/en/" target="_blank"><span class="pill-icon">⛏️</span> מכרה מלח</a>
+  </div>
+</div>
+
+<!-- OVERVIEW STRIP -->
+<div class="overview-strip">
+  <button class="overview-btn" onclick="openOverview()">🗺️ &nbsp; מסלול כללי — כל 10 הימים</button>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar" id="tabBar">
+  <div class="tab-list">
+    <button class="tab-btn active" onclick="goTab(0)"><span class="tab-icon">✈️</span>יום 1<span class="tab-lbl">15.7</span></button>
+    <button class="tab-btn" onclick="goTab(1)"><span class="tab-icon">🏰</span>יום 2<span class="tab-lbl">16.7</span></button>
+    <button class="tab-btn" onclick="goTab(2)"><span class="tab-icon">⛵</span>יום 3<span class="tab-lbl">17.7</span></button>
+    <button class="tab-btn" onclick="goTab(3)"><span class="tab-icon">🌊</span>יום 4<span class="tab-lbl">18.7</span></button>
+    <button class="tab-btn" onclick="goTab(4)"><span class="tab-icon">🏘️</span>יום 5<span class="tab-lbl">19.7</span></button>
+    <button class="tab-btn" onclick="goTab(5)"><span class="tab-icon">🚵</span>יום 6<span class="tab-lbl">20.7</span></button>
+    <button class="tab-btn" onclick="goTab(6)"><span class="tab-icon">💧</span>יום 7<span class="tab-lbl">21.7</span></button>
+    <button class="tab-btn" onclick="goTab(7)"><span class="tab-icon">🌲</span>יום 8<span class="tab-lbl">22.7</span></button>
+    <button class="tab-btn" onclick="goTab(8)"><span class="tab-icon">🌊</span>יום 9<span class="tab-lbl">23.7</span></button>
+    <button class="tab-btn" onclick="goTab(9)"><span class="tab-icon">🏙️</span>יום 10<span class="tab-lbl">24.7</span></button>
+    <button class="tab-btn" onclick="goTab(10)"><span class="tab-icon">🏠</span>יום 11<span class="tab-lbl">25.7</span></button>
+  </div>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<div class="content">
+
+<!-- ══════ DAY 1 ══════ -->
+<div class="day-panel active" id="d0">
+  <div class="day-hdr" data-bg="✈️">
+    <div class="day-hdr-top">
+      <div class="day-num">01</div>
+      <div class="day-meta">
+        <div class="date">רביעי · 15 יולי 2026</div>
+        <h2>נחיתה מינכן → זלצבורג</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">✈️ MUC</span><span class="arrow">›</span>
+      <span class="node">🚗 A8</span><span class="arrow">›</span>
+      <span class="node">🏰 זלצבורג</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m0')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m0">
+    <div class="leaflet-map" id="lmap_m0"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-start">✈️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">שחרים</div>
+        <div class="stop-card must">
+          <h3>נחיתה — שדה התעופה מינכן (MUC)</h3>
+          <p>איסוף רכב שכור, צ'ק-אין לניווט לאוסטריה. כביש A8 לכיוון זלצבורג — 90 דקות נסיעה ציורית.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot">🏰</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ</div>
+        <div class="stop-card">
+          <h3>הגעה לזלצבורג + התמצאות</h3>
+          <p>צ'ק-אין בלאונרדו בוטיק. טיול ראשון ברחוב גטריידגאסה, גשר האהבה, המרכז ההיסטורי הבארוקי.</p>
+          <div class="tags"><span class="tag tag-green">🏰 עיר עתיקה UNESCO</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🍺</div></div>
+      <div class="stop-right">
+        <div class="stop-time">ערב</div>
+        <div class="stop-card">
+          <h3>ארוחת ערב ראשונה — אוסטרית!</h3>
+          <p>Wiener Schnitzel, Käsespätzle, בירה אוסטרית. המלצה: Gasthof Wilder Mann ב-Getreidegasse.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>Leonardo Boutique Hotel Salzburg Gablerbräu ★★★★</h4>
+      <p>במרכז העיר העתיקה · ליל 1 מתוך 2</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€130–160 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪520–640 / לילה</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DAY 2 ══════ -->
+<div class="day-panel" id="d1">
+  <div class="day-hdr" data-bg="🏰">
+    <div class="day-hdr-top">
+      <div class="day-num">02</div>
+      <div class="day-meta">
+        <div class="date">חמישי · 16 יולי 2026</div>
+        <h2>זלצבורג — מבצר + מכרה מלח + נקיק</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🏰 מבצר</span><span class="arrow">›</span>
+      <span class="node">⛏️ Hallein</span><span class="arrow">›</span>
+      <span class="node">🏔️ נקיק ליכטנשטיין</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m1')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m1">
+    <div class="leaflet-map" id="lmap_m1"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-start">🏰</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר — 9:30</div>
+        <div class="stop-card">
+          <h3>מבצר הוהנזלצבורג</h3>
+          <p>מבצר מימי הביניים עם נוף פנורמי על זלצבורג והאלפים. עלייה ברכבל פוניקולר. ⭐ 4.6 · 51,000 ביקורות!</p>
+          <div class="tags"><span class="tag tag-green">🎟️ ~€15</span></div>
+          <a class="attr-link gold" href="https://www.salzburg-burgen.at/en/hohensalzburg-fortress/" target="_blank">🔗 אתר ורכישת כרטיסים</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-must">⛏️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">צהריים</div>
+        <div class="stop-card must">
+          <h3>⛏️ Salzwelten — מכרה מלח הליין</h3>
+          <p>מכרה מלח בן 2,600 שנה! מגלשות עץ, סירות תת-קרקעיות, מנהרות היסטוריות. מרהיב לכל הגילאים. ⭐ 4.6 · 2,376 ביקורות.</p>
+          <div class="tags"><span class="tag tag-gold">⏱️ 1.5–2 שעות</span><span class="tag tag-blue">🎟️ הזמינו מראש!</span></div>
+          <a class="attr-link gold" href="https://www.salzwelten.at/en/salzburg/tickets-preise/" target="_blank">🎟️ רכישת כרטיסים</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-lake">🌊</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ</div>
+        <div class="stop-card lake">
+          <h3>נקיק ליכטנשטיין (Liechtensteinklamm)</h3>
+          <p>נקיק ענק ומרהיב — מסלול של 2 שעות לאורך הנהר, מדרגות ספירלה (Helix), מפל עצום. ⭐ 4.6 · 8,285 ביקורות!</p>
+          <div class="tags"><span class="tag tag-blue">💧 ~€15 כניסה</span><span class="tag tag-green">⏱️ 2 שעות</span></div>
+          <a class="attr-link blue" href="https://www.liechtensteinklamm.at" target="_blank">🔗 אתר + מידע</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🌙</div></div>
+      <div class="stop-right">
+        <div class="stop-time">ערב</div>
+        <div class="stop-card">
+          <h3>חזרה לזלצבורג — לילה אחרון</h3>
+          <p>ארוחת ערב נינוחה, אולי קונצרט קטן במרכז (זלצבורג בשיא עונת הפסטיבלים ביולי).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>Leonardo Boutique Hotel Salzburg Gablerbräu ★★★★</h4>
+      <p>ליל 2 מתוך 2 בזלצבורג</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€130–160 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪520–640 / לילה</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DAY 3 ══════ -->
+<div class="day-panel" id="d2">
+  <div class="day-hdr" data-bg="⛵">
+    <div class="day-hdr-top">
+      <div class="day-num">03</div>
+      <div class="day-meta">
+        <div class="date">שישי · 17 יולי 2026</div>
+        <h2>קניגסזה + אגמי וולפגנגזה</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🏔️ זלצבורג</span><span class="arrow">›</span>
+      <span class="node">⛵ Königssee</span><span class="arrow">›</span>
+      <span class="node">🌊 St. Gilgen</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m2')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m2">
+    <div class="leaflet-map" id="lmap_m2"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-start">🚗</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר מוקדם</div>
+        <div class="stop-card">
+          <h3>זלצבורג → קניגסזה (50 דק')</h3>
+          <p>יציאה מוקדמת לפני הצהרים להימנע מהמוני תיירים. חניה בכפר Schönau am Königssee.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-lake">⛵</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר</div>
+        <div class="stop-card lake">
+          <h3>Königssee — האגם המלכותי</h3>
+          <p>סירה חשמלית שקטה על מים אמרלד בין קירות הרים ניצבים. עצירה בכנסיית St. Bartholomä. נוף אחד מהציוריים ביותר בגרמניה. ⭐ 4.8!</p>
+          <div class="tags"><span class="tag tag-blue">⛵ סירה ~€21</span><span class="tag tag-green">⏱️ 3–4 שעות</span></div>
+          <a class="attr-link blue" href="https://www.seenschifffahrt.de/en/koenigssee/" target="_blank">🎟️ כרטיסי סירה</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-must">🌊</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ</div>
+        <div class="stop-card must">
+          <h3>סנטו גילגן — אגם וולפגנגזה</h3>
+          <p>הגעה לעיירה הציורית על שפת האגם, טיול רגל לאורך המזח, שחייה, קפה עם נוף הרים. הכנה ל-E-Bike מחר.</p>
+          <div class="tags"><span class="tag tag-green">🏊 שחייה חינם</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🌅</div></div>
+      <div class="stop-right">
+        <div class="stop-time">ערב</div>
+        <div class="stop-card">
+          <h3>שקיעה מהמזח + ארוחה</h3>
+          <p>שקיעה מושלמת על וולפגנגזה עם בירה אוסטרית ומאכלי דגים מהאגם.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>Hotel Radetzky — St. Gilgen ★★★★</h4>
+      <p>על שפת האגם · ליל 1 מתוך 2</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€170–220 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪680–880 / לילה</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DAY 4 ══════ -->
+<div class="day-panel" id="d3">
+  <div class="day-hdr" data-bg="🚵">
+    <div class="day-hdr-top">
+      <div class="day-num">04</div>
+      <div class="day-meta">
+        <div class="date">שבת · 18 יולי 2026</div>
+        <h2>E-Bike סביב וולפגנגזה + שפיצברג</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🌊 St. Gilgen</span><span class="arrow">›</span>
+      <span class="node">🚵 E-Bike</span><span class="arrow">›</span>
+      <span class="node">🏔️ Schafberg</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m3')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m3">
+    <div class="leaflet-map" id="lmap_m3"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-must">🚵</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר — E-BIKE יום מלא</div>
+        <div class="stop-card must">
+          <h3>🚵 E-Bike סביב האגם — וולפגנגזה</h3>
+          <p>השכרת E-Bike בסנטו גילגן ורכיבה מושלמת לאורך חוף האגם, דרך כפרים, לעיירת St. Wolfgang ובחזרה. ~35 ק"מ עם נוף הרים עצום.</p>
+          <div class="tags"><span class="tag tag-gold">🚴 E-BIKE חובה</span><span class="tag tag-green">⏱️ 3–5 שעות</span></div>
+          <a class="attr-link gold" href="https://www.flachau.com/en/summer/e-mountain-biking/" target="_blank">🔗 מידע E-Bike אזור</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot">🍽️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">צהריים</div>
+        <div class="stop-card">
+          <h3>ארוחה ב-St. Wolfgang</h3>
+          <p>הפסקה בעיירה הציורית עם מסעדה על שפת האגם. מאכלים מסורתיים + ריהוט Käsespätzle.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-lake">🏔️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ</div>
+        <div class="stop-card lake">
+          <h3>רכבל שפיצברג (1,783 מ')</h3>
+          <p>עלייה ברכבל פנורמי לפסגת Schafberg — נוף על עשרות אגמי הסלקאמרגוט. מרהיב ביולי!</p>
+          <div class="tags"><span class="tag tag-blue">🚠 ~€31 הלוך-חזור</span></div>
+          <a class="attr-link blue" href="https://www.wolfgangseeschifffahrt.at/en/schafberg-railway/" target="_blank">🎟️ כרטיסי רכבל</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🏊</div></div>
+      <div class="stop-right">
+        <div class="stop-time">ערב</div>
+        <div class="stop-card">
+          <h3>שחייה + הכנה לנסיעה</h3>
+          <p>שחייה אחרונה בוולפגנגזה הצלולים. מחר נוסעים לפלכאו — אריזה קלה בערב.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>Hotel Radetzky — St. Gilgen (ליל 2 מתוך 2)</h4>
+      <p>לפני הנסיעה לפלכאו מחר</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€170–220 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪680–880 / לילה</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DAY 5 ══════ -->
+<div class="day-panel" id="d4">
+  <div class="day-hdr" data-bg="🏘️">
+    <div class="day-hdr-top">
+      <div class="day-num">05</div>
+      <div class="day-meta">
+        <div class="date">ראשון · 19 יולי 2026</div>
+        <h2>פלכאו — הגעה + Lucky Flitzer + טבע</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🌊 St. Gilgen</span><span class="arrow">›</span>
+      <span class="node">🏘️ Flachau</span><span class="arrow">›</span>
+      <span class="node">🛷 Lucky Flitzer</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m4')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m4">
+    <div class="leaflet-map" id="lmap_m4"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-start">🚗</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר</div>
+        <div class="stop-card">
+          <h3>נסיעה מ-St. Gilgen לפלכאו</h3>
+          <p>~70 דקות נסיעה דרך עמקי הסאלצבורג. עצירת דלק וקפה בדרך.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-must">🛷</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ — 12:00</div>
+        <div class="stop-card must">
+          <h3>🛷 Lucky Flitzer — מזחלת הרים פלכאו</h3>
+          <p>מזחלת קיץ כל-מזג-אוויר! 1,100 מ' עם 5 לולאות ו-2 קפיצות. עלייה בלפט וירידה מהירה למקסימום! ⭐ 4.3 · 3,000 ביקורות.</p>
+          <div class="tags"><span class="tag tag-gold">🛷 מומלץ כמה פעמים!</span><span class="tag tag-green">🕐 פתוח 12:00–19:00</span></div>
+          <a class="attr-link gold" href="https://www.luckyflitzer.at" target="_blank">🎟️ אתר + כרטיסים</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot">🌲</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ מאוחר</div>
+        <div class="stop-card">
+          <h3>טיול הרגל — Flori's Adventure Trail</h3>
+          <p>מסלול אתגר משפחתי ייחודי עם תחנות חידות בטבע (Erlebnispfad). מתאים לכולם, בוא מוכן לרגליים!</p>
+          <div class="tags"><span class="tag tag-green">🆓 חינם עם כרטיס קיץ</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🏠</div></div>
+      <div class="stop-right">
+        <div class="stop-time">ערב</div>
+        <div class="stop-card">
+          <h3>ארוחה ב-Almhütte מקומית</h3>
+          <p>פלכאו מלאה בצריפי הרים (Almhütten) עם מאכלי Kasnocken, Kaiserschmarrn ובירת חבית.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>פלכאו · ליל 1 מתוך 2</h4>
+      <p>המלצה: Sport &amp; Wellness Hotel Tirolerhof או Hotel Tauernhof</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€120–160 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪480–640 / לילה</span>
+      </div>
+    </div>
+  </div>
+  <div class="options-box">
+    <h4>🌟 אופציות נוספות בפלכאו</h4>
+    <div class="opt-item"><span class="opt-badge">🌊</span><div>רפטינג / Riverbug על נהר הפלחאובך — לאדרנלין אוהבים!</div></div>
+    <div class="opt-item"><span class="opt-badge">🏊</span><div>Badesee Flachauwinkl — אגם רחצה טבעי בקרבת מקום</div></div>
+    <div class="opt-item"><span class="opt-badge">🎯</span><div>קאנינג, קיאקינג, ירייה בחץ וקשת — דרך מרכז הפעילות</div></div>
+  </div>
+</div>
+
+<!-- ══════ DAY 6 — פלכאו יום 2 ══════ -->
+<div class="day-panel" id="d5">
+    <div class="day-hdr-top">
+      <div class="day-num">06</div>
+      <div class="day-meta">
+        <div class="date">שני · 20 יולי 2026</div>
+        <h2>🚵 E-Bike הרים + Badesee — פלכאו יום 2</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🏘️ פלכאו</span><span class="arrow">›</span>
+      <span class="node">🚵 E-Bike הרים</span><span class="arrow">›</span>
+      <span class="node">🏊 אגם רחצה</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m5day2')">📍 מפת פלכאו</button>
+  </div>
+  <div class="map-wrap" id="m5day2">
+    <div class="leaflet-map" id="lmap_m5day2"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-must">🚵</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר מוקדם — יום שלם!</div>
+        <div class="stop-card must">
+          <h3>🚵 E-Bike הרים — פלכאו</h3>
+          <p>השכרת E-Bike ויציאה למסלולי ההרים — Ennsradweg הציורי לאורך הנהר, או מסלולי הפסגות עם נוף לאלפים. תחנות טעינה בכל הכפר.</p>
+          <div class="tags"><span class="tag tag-gold">🚴 E-BIKE חובה</span><span class="tag tag-green">⏱️ 4–6 שעות</span></div>
+          <a class="attr-link gold" href="https://www.flachau.com/en/summer/e-mountain-biking/" target="_blank">🔗 מסלולי E-Bike פלכאו</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot">☕</div></div>
+      <div class="stop-right">
+        <div class="stop-time">צהריים</div>
+        <div class="stop-card">
+          <h3>הפסקה בצריף הרים (Alm)</h3>
+          <p>אחד מחוות ה-Alm הרבות — Jause (מגש בשר-גבינות אוסטרי) ונוף אינסופי לאלפים.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-lake">🏊</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ</div>
+        <div class="stop-card lake">
+          <h3>Badesee Flachauwinkl — אגם רחצה טבעי</h3>
+          <p>שחייה באגם הרים טבעי וצלול אחרי יום אינטנסיבי על האופניים. כניסה חינם.</p>
+          <div class="tags"><span class="tag tag-blue">🆓 חינם</span><span class="tag tag-green">⭐ 4.5</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🌄</div></div>
+      <div class="stop-right">
+        <div class="stop-time">ערב</div>
+        <div class="stop-card">
+          <h3>ערב אחרון בפלכאו</h3>
+          <p>ארוחת ערב מיוחדת בכפר. מחר נוסעים לאינסברוק דרך Aqua Dome.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>פלכאו · ליל 2 מתוך 2 ✅</h4>
+      <p>המלצה: Sport &amp; Wellness Hotel Tirolerhof או Hotel Tauernhof</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€120–160 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪480–640 / לילה</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DAY 6 ══════ -->
+<div class="day-panel" id="d6">
+  <div class="day-hdr" data-bg="💧">
+    <div class="day-hdr-top">
+      <div class="day-num">07</div>
+      <div class="day-meta">
+        <div class="date">שלישי · 21 יולי 2026</div>
+        <h2>פלכאו → 💧 Aqua Dome → אינסברוק</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🏘️ פלכאו</span><span class="arrow">›</span>
+      <span class="node">💧 Aqua Dome</span><span class="arrow">›</span>
+      <span class="node">🏔️ אינסברוק</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m5')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m5">
+    <div class="leaflet-map" id="lmap_m5"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-start">🚗</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר — יציאה 8:30</div>
+        <div class="stop-card">
+          <h3>פלכאו → לנגנפלד (45 דק')</h3>
+          <p>Aqua Dome נמצא בדיוק על הדרך מפלכאו לאינסברוק — בעמק האוצ (Ötztal). נוף מדהים בנסיעה.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-must">💧</div></div>
+      <div class="stop-right">
+        <div class="stop-time">9:30–13:30</div>
+        <div class="stop-card must">
+          <h3>💧 Aqua Dome — ספא תרמי פנורמי</h3>
+          <p>ספא תרמי מהמם עם מים חמים טבעיים על רקע פסגות האלפים. בריכות אינסופיות, סאונה, נוף שוחק נשימה. ⭐ 4.4 · 12,854 ביקורות!</p>
+          <div class="tags"><span class="tag tag-gold">💧 חובה!</span><span class="tag tag-green">🕘 9:00–23:00</span><span class="tag tag-blue">🎟️ הזמינו מראש</span></div>
+          <a class="attr-link gold" href="https://www.aqua-dome.at/en/therme/tickets-prices/" target="_blank">🎟️ כרטיסים ומחירים</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot">🍽️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">צהריים</div>
+        <div class="stop-card">
+          <h3>ארוחת צהריים בלנגנפלד</h3>
+          <p>אחרי הספא — ארוחת צהריים בכפר לנגנפלד. אחר כך המשך לאינסברוק (45 דקות).</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🏔️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ</div>
+        <div class="stop-card">
+          <h3>הגעה לאינסברוק — Golden Roof + ערב</h3>
+          <p>צ'ק-אין ב-Innsbruck Residence. טיול ערב ראשון — Golden Roof, כיכר Herzog Friedrich, בירגארטן על נהר ה-Inn.</p>
+          <div class="tags"><span class="tag tag-green">🏙️ עיר עתיקה מרהיבה</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>Innsbruck Residence ★★★★★</h4>
+      <p>אינסברוק · ליל 1 מתוך 2 — ☀️ 2 לילות מלאים!</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€180–220 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪720–880 / לילה</span>
+      </div>
+    </div>
+  </div>
+  <div class="tips">
+    <h4>💡 טיפים</h4>
+    <ul>
+      <li>Aqua Dome — הזמינו מראש! €44 כניסה + €22 סאונה = ~€66/אדם</li>
+      <li>הגיעו ל-Aqua Dome ב-9:30 בדיוק — לפני ההמונים</li>
+      <li>קחו בגד ים + מגבת — ארון נעילה בחינם</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════ DAY 7 ══════ -->
+<div class="day-panel" id="d7">
+  <div class="day-hdr" data-bg="🌲">
+    <div class="day-hdr-top">
+      <div class="day-num">08</div>
+      <div class="day-meta">
+        <div class="date">רביעי · 22 יולי 2026</div>
+        <h2>🌲 Hornpark פארק חבלים — יום אינסברוק</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🏔️ אינסברוק</span><span class="arrow">›</span>
+      <span class="node">🌲 St. Johann (Hornpark)</span><span class="arrow">›</span>
+      <span class="node">🏔️ אינסברוק</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m6')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m6">
+    <div class="leaflet-map" id="lmap_m6"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-start">🚗</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר — 8:30</div>
+        <div class="stop-card">
+          <h3>אינסברוק → סנטו יוהן אין טירול (60 דק')</h3>
+          <p>נסיעה ציורית דרך טירול לאורך נהר ה-Inn. בוא עם בטן מלאה לפארק!</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-must">🌲</div></div>
+      <div class="stop-right">
+        <div class="stop-time">9:30–15:30 (6–4 שעות)</div>
+        <div class="stop-card must">
+          <h3>🌲 Hornpark Kletterwald — פארק חבלים</h3>
+          <p>פארק חבלים ענק על ההר — רמות קושי לכולם, זיפ-ליין, כבל-קאר לעלייה. ⭐ 4.4 · 344 ביקורות. לבשו בגדים שאפשר להתלכלך!</p>
+          <div class="tags"><span class="tag tag-green">🌲 חובה!</span><span class="tag tag-gold">🕘 9:00–17:00</span></div>
+          <a class="attr-link gold" href="https://www.hornpark.at/en/summer/ropes-course/" target="_blank">🎟️ כרטיסים + מחירים</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot">🚗</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ</div>
+        <div class="stop-card">
+          <h3>חזרה לאינסברוק (60 דק')</h3>
+          <p>חזרה נוחה לאינסברוק. זמן להתקלח, לנוח ולהתכונן לערב.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🍺</div></div>
+      <div class="stop-right">
+        <div class="stop-time">ערב</div>
+        <div class="stop-card">
+          <h3>ערב שני באינסברוק — חופשי!</h3>
+          <p>ארוחה ב-Altstadt, הליכה לאורך נהר ה-Inn, או עלייה ברכבל Hungerburgbahn לנוף לילי על אינסברוק.</p>
+          <div class="tags"><span class="tag tag-green">🌙 לילה שני!</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>Innsbruck Residence ★★★★★</h4>
+      <p>אינסברוק · ליל 2 מתוך 2 ✅</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€180–220 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪720–880 / לילה</span>
+      </div>
+    </div>
+  </div>
+  <div class="tips">
+    <h4>💡 טיפים</h4>
+    <ul>
+      <li>Hornpark — הגיעו לפני 10:00 לתורים קצרים יותר</li>
+      <li>לבשו בגדים נוחים ונעלי ספורט סגורות — חובה</li>
+      <li>הכרטיסים כוללים כבל-קאר לעלייה</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════ DAY 8 ══════ -->
+<div class="day-panel" id="d8">
+  <div class="day-hdr" data-bg="🌊">
+    <div class="day-hdr-top">
+      <div class="day-num">09</div>
+      <div class="day-meta">
+        <div class="date">חמישי · 23 יולי 2026</div>
+        <h2>🌊 אגם Alpsee + טבע טירולי → מינכן</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🏔️ אינסברוק</span><span class="arrow">›</span>
+      <span class="node">🌿 Ehrwald / Zugspitze</span><span class="arrow">›</span>
+      <span class="node">🌊 Alpsee</span><span class="arrow">›</span>
+      <span class="node">🏙️ מינכן עד 19:00</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m7')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m7">
+    <div class="leaflet-map" id="lmap_m7"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-start">🚗</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר — 9:00</div>
+        <div class="stop-card">
+          <h3>יציאה נינוחה מאינסברוק</h3>
+          <p>ארוחת בוקר מלאה במלון, צ'ק-אאוט, ויציאה בנחת צפונה לכיוון גרמניה.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot">🏔️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר — עצירה בדרך</div>
+        <div class="stop-card">
+          <h3>Ehrwald — כפר ההרים הטירולי</h3>
+          <p>עיירה ציורית בשולי הצוגשפיצה (הר הגבוה בגרמניה). קפה בכיכר, נוף פנורמי לפסגה, אוויר הרים צח. עצירת חצי שעה בלבד.</p>
+          <div class="tags"><span class="tag tag-green">🏔️ נוף מושלם</span><span class="tag tag-blue">⏱️ 30 דק'</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-lake">🌊</div></div>
+      <div class="stop-right">
+        <div class="stop-time">צהריים–אחה"צ</div>
+        <div class="stop-card lake">
+          <h3>🌊 אגם Alpsee — אימנשטאט</h3>
+          <p>אגם הרים מרהיב עם מים כחול-ירוק צלולים ונוף לאלפים. שחייה, קיאק, SUP, טיול לאורך שפת האגם. אחד האגמים הציוריים בבוואריה. ⭐ 4.8!</p>
+          <div class="tags"><span class="tag tag-blue">🏊 שחייה חינם</span><span class="tag tag-green">🚣 קיאק / SUP להשכרה</span><span class="tag tag-gold">⏱️ 2–3 שעות</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🏙️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">⚠️ עד 19:00 — חובה!</div>
+        <div class="stop-card must">
+          <h3>הגעה למינכן (~1.5 שעות מ-Alpsee)</h3>
+          <p>צ'ק-אין ב-Hotel MIO by AMANO. ערב ראשון במינכן — Marienplatz, Viktualienmarkt, בירגארטן ראשון!</p>
+          <div class="tags"><span class="tag tag-red">⚠️ חייבים עד 19:00</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>Hotel MIO by AMANO ★★★★ — מינכן</h4>
+      <p>במרכז העיר העתיקה · ליל 1 מתוך 2 · דירוג 900</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€150–190 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪600–760 / לילה</span>
+      </div>
+    </div>
+  </div>
+  <div class="tips">
+    <h4>💡 טיפים</h4>
+    <ul>
+      <li>Alpsee — חנייה בחינם ליד שפת האגם, אין כניסה</li>
+      <li>קיאק / SUP — השכרה ב-Bootsverleih Alpsee, ~€15/שעה</li>
+      <li>יציאה מ-Alpsee לא יאוחר מ-16:30 להגיע מינכן בנחת</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════ DAY 9 ══════ -->
+<div class="day-panel" id="d9">
+  <div class="day-hdr" data-bg="🏰">
+    <div class="day-hdr-top">
+      <div class="day-num">10</div>
+      <div class="day-meta">
+        <div class="date">שישי · 24 יולי 2026</div>
+        <h2>נוישוואנשטיין + Alpsee</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🏙️ מינכן</span><span class="arrow">›</span>
+      <span class="node">🏰 נוישוואנשטיין</span><span class="arrow">›</span>
+      <span class="node">🌊 Alpsee</span><span class="arrow">›</span>
+      <span class="node">🏙️ מינכן</span>
+    </div>
+    <button class="map-toggle" onclick="toggleMap('m8')">📍 מסלול נסיעה יומי</button>
+  </div>
+  <div class="map-wrap" id="m8">
+    <div class="leaflet-map" id="lmap_m8"></div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-must">🏰</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר מוקדם — 9:00</div>
+        <div class="stop-card must">
+          <h3>🏰 נוישוואנשטיין — טירת האגדות</h3>
+          <p>הטירה שעיצבה את לישנה של דיסני! 80 ד' ממינכן. הזמינו כרטיסים עכשיו — תורים ענקיים ביולי. ⭐ 4.6 · 109,000 ביקורות.</p>
+          <div class="tags"><span class="tag tag-red">🎟️ הזמינו עכשיו!</span><span class="tag tag-gold">€13/אדם</span></div>
+          <a class="attr-link gold" href="https://www.neuschwanstein.de/englisch/tourist/index.htm" target="_blank">🎟️ כרטיסים רשמיים</a>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-lake">🌊</div></div>
+      <div class="stop-right">
+        <div class="stop-time">אחה"צ</div>
+        <div class="stop-card lake">
+          <h3>אגם Alpsee — שחייה אחרונה</h3>
+          <p>בדרך חזרה למינכן — שחייה באגם ההרים המדהים של אימנשטאט עם מים כחול-ירוק על רקע האלפים. ⭐ 4.8!</p>
+          <div class="tags"><span class="tag tag-blue">🏊 חינם</span><span class="tag tag-green">שעה-שעתיים</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">🍺</div></div>
+      <div class="stop-right">
+        <div class="stop-time">ערב</div>
+        <div class="stop-card">
+          <h3>ארוחת ערב אחרונה — מינכן</h3>
+          <p>Hofbräuhaus הקלאסי או Augustiner Keller הנהדר. Schweinshaxe, Weißwurst, Weizenbier — פרידה בסגנון!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sleep-card">
+    <div class="sleep-icon">🛏️</div>
+    <div class="sleep-info">
+      <h4>Hotel MIO by AMANO — מינכן (ליל 2 מתוך 2)</h4>
+      <p>הלילה האחרון לפני הטיסה</p>
+      <div class="sleep-price">
+        <span class="price-chip"><span class="pc-flag">€</span> ~€150–190 / לילה</span>
+        <span class="price-chip"><span class="pc-flag">₪</span> ~₪600–760 / לילה</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DAY 10 ══════ -->
+<div class="day-panel" id="d10">
+  <div class="day-hdr" data-bg="✈️">
+    <div class="day-hdr-top">
+      <div class="day-num">11</div>
+      <div class="day-meta">
+        <div class="date">שבת · 25 יולי 2026</div>
+        <h2>הטיסה הביתה — Auf Wiedersehen! 👋</h2>
+      </div>
+    </div>
+    <div class="breadcrumb">
+      <span class="node">🏙️ מינכן</span><span class="arrow">›</span>
+      <span class="node">✈️ MUC → 🏠</span>
+    </div>
+  </div>
+
+  <p class="section-label">תחנות היום</p>
+  <div class="stops">
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-start">☕</div></div>
+      <div class="stop-right">
+        <div class="stop-time">בוקר</div>
+        <div class="stop-card">
+          <h3>ארוחת בוקר בווארית אחרונה</h3>
+          <p>Weißwurst עם Weißbier (כן, גם בבוקר — זה הכי אוסטנטי!) ב-Café Rischart ברחוב Marienplatz.</p>
+        </div>
+      </div>
+    </div>
+    <div class="stop">
+      <div class="stop-left"><div class="stop-dot s-end">✈️</div></div>
+      <div class="stop-right">
+        <div class="stop-time">לפי שעת הטיסה</div>
+        <div class="stop-card">
+          <h3>החזרת רכב + המראה</h3>
+          <p>הגיעו 2.5–3 שעות לפני. החזרת רכב, ביקור אחרון בחנות הדיוטי-פרי. Tschüss!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tips">
+    <h4>📋 צ'קליסט לפני הטיסה</h4>
+    <ul>
+      <li>החזרת רכב — בדקו דלק, שריטות, ניקיון</li>
+      <li>Tax Refund — החזר מע"מ בנמל תעופה על קניות</li>
+      <li>הגיעו לנמל 3 שעות מראש — ביולי עמוס!</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<!-- ═══ OVERVIEW OVERLAY ═══ -->
+<div class="overlay" id="ovOverlay">
+  <div class="overlay-box">
+    <button class="ov-close" onclick="closeOverview()">✕</button>
+    <div class="ov-title">מסלול הטיול המלא · 10 ימים</div>
+    <div class="ov-sub">מינכן · זלצבורג · סנטו גילגן · פלכאו · אינסברוק · מינכן</div>
+    <div class="ov-map-wrap">
+      <div class="leaflet-map" id="lmap_overview"></div>
+    </div>
+    <table class="ov-table">
+      <thead><tr><th>יום</th><th>תאריך</th><th>מוקד היום</th><th>לינה</th></tr></thead>
+      <tbody>
+        <tr><td class="ov-day">1</td><td>15.7</td><td>✈️ נחיתה מינכן → זלצבורג</td><td>זלצבורג</td></tr>
+        <tr><td class="ov-day">2</td><td>16.7</td><td>🏰 מבצר + ⛏️ מכרה מלח + 🌊 נקיק</td><td>זלצבורג</td></tr>
+        <tr><td class="ov-day">3</td><td>17.7</td><td>⛵ קניגסזה → 🌊 St. Gilgen</td><td>St. Gilgen</td></tr>
+        <tr><td class="ov-day">4</td><td>18.7</td><td><span class="must-tag">🚵 E-Bike וולפגנגזה</span> + 🏔️ רכבל</td><td>St. Gilgen</td></tr>
+        <tr><td class="ov-day">5</td><td>19.7</td><td><span class="must-tag">🛷 Lucky Flitzer</span> + טבע פלכאו</td><td>פלכאו</td></tr>
+        <tr><td class="ov-day">6</td><td>20.7</td><td><span class="must-tag">💧 Aqua Dome</span> (בדרך) → 🏔️ הגעה אינסברוק</td><td>אינסברוק</td></tr>
+        <tr><td class="ov-day">7</td><td>21.7</td><td><span class="must-tag">🌲 Hornpark חבלים</span> (יום טיול מאינסברוק)</td><td>אינסברוק ✅</td></tr>
+        <tr><td class="ov-day">8</td><td>22.7</td><td>🏔️ Ehrwald + <span class="must-tag">🌊 אגם Alpsee</span> → ⚠️ מינכן עד 19:00</td><td>מינכן</td></tr>
+        <tr><td class="ov-day">9</td><td>23.7</td><td>🏰 נוישוואנשטיין + 🌊 Alpsee</td><td>מינכן</td></tr>
+        <tr><td class="ov-day">10</td><td>24.7</td><td>✈️ המראה הביתה</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div class="ov-legend">
+      <div class="ov-leg-item"><div class="ov-leg-dot" style="background:var(--gold)"></div><span class="must-tag">צהוב = חובה</span></div>
+      <div class="ov-leg-item"><div class="ov-leg-dot" style="background:var(--lake)"></div>כחול = אגם/מים</div>
+      <div class="ov-leg-item"><div class="ov-leg-dot" style="background:#e53935"></div>אדום = זמן קריטי</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ─── TAB NAVIGATION ───
+function goTab(idx){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.querySelectorAll('.day-panel').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.map-wrap').forEach(m=>m.classList.remove('open'));
+  const tb=document.getElementById('tabBar');
+  window.scrollTo({top:tb.getBoundingClientRect().top+window.scrollY-8,behavior:'smooth'});
+}
+function openOverview(){
+  document.getElementById('ovOverlay').classList.add('open');
+  setTimeout(()=>initMap('overview'),120);
+}
+function closeOverview(){document.getElementById('ovOverlay').classList.remove('open');}
+document.getElementById('ovOverlay').addEventListener('click',function(e){if(e.target===this)closeOverview();});
+
+// ─────────────────────────────────────────────────────────
+// REAL ROAD COORDINATES — traced along A8/A1/B roads
+// Format: [lat, lng]
+// ─────────────────────────────────────────────────────────
+const ROUTES = {
+
+  // יום 1: מינכן שדה תעופה → A9 → A8/A99 → A8 → גבול → זלצבורג
+  m0: [[48.3537,11.7750],[48.3420,11.8220],[48.2950,11.9100],[48.2400,12.0300],
+       [48.1850,12.1700],[48.1250,12.3200],[48.0650,12.4900],[47.9900,12.6500],
+       [47.9300,12.7900],[47.8700,12.9100],[47.8300,13.0000],[47.8095,13.0550]],
+
+  // יום 2: מבצר → הלין (מכרה מלח) → Liechtensteinklamm → זלצבורג
+  m1: [[47.7950,13.0470],[47.7600,13.0550],[47.7200,13.0850],[47.6890,13.1010],
+       [47.6400,13.1500],[47.5800,13.1900],[47.5400,13.2100],[47.5230,13.2310],
+       [47.5400,13.2100],[47.5900,13.1800],[47.6500,13.1300],[47.7100,13.0800],
+       [47.7700,13.0600],[47.8095,13.0550]],
+
+  // יום 3: זלצבורג → B160 דרום → B21 → B305 → קניגסזה → B305/B21 → St. Gilgen
+  m2: [[47.8095,13.0550],[47.7800,13.0700],[47.7400,13.0600],[47.7000,13.0100],
+       [47.6600,12.9800],[47.6300,12.9700],[47.5930,12.9870],
+       [47.6100,12.9900],[47.6400,13.0200],[47.6800,13.0700],
+       [47.7100,13.1500],[47.7300,13.2200],[47.7500,13.3000],[47.7680,13.3650]],
+
+  // יום 4: St. Gilgen → B158 → St. Wolfgang → Schafberg → חזרה
+  m3: [[47.7680,13.3650],[47.7520,13.3900],[47.7400,13.4200],[47.7380,13.4510],
+       [47.7420,13.4480],[47.7520,13.4440],
+       [47.7480,13.4300],[47.7400,13.4000],[47.7550,13.3800],[47.7680,13.3650]],
+
+  // יום 5: St. Gilgen → B158 → Salzburg → A10 → פלכאו
+  m4: [[47.7680,13.3650],[47.7500,13.3200],[47.7300,13.2500],[47.7100,13.1800],
+       [47.7400,13.0800],[47.7800,13.0600],[47.8095,13.0550],
+       [47.7800,13.0400],[47.7200,13.0300],[47.6500,13.0800],
+       [47.5800,13.1200],[47.5200,13.2000],[47.4600,13.2500],
+       [47.4000,13.3000],[47.3600,13.3400],[47.3390,13.3890]],
+
+  // יום 6: פלכאו — E-Bike לולאה מקומית
+  m5day2: [[47.3390,13.3890],[47.3500,13.3700],[47.3600,13.3500],[47.3700,13.3300],
+           [47.3800,13.3100],[47.3750,13.3600],[47.3600,13.3900],[47.3390,13.3890]],
+  // מסלול אמיתי: A10 Tauern → Felbertauern Tunnel → Brennerautobahn
+  m5: [[47.3390,13.3890],[47.3800,13.4200],[47.4200,13.4800],[47.4600,13.5200],
+       [47.3900,13.5800],[47.3400,13.6500],[47.2900,13.7300],
+       [47.2500,13.7900],[47.2100,13.8800],[47.1800,12.7500],
+       [47.0200,12.8500],[46.8800,12.8700],[46.7900,12.8600],
+       [46.8300,12.4900],[46.9500,12.2500],[47.0100,12.1000],
+       [47.0500,11.9500],[47.0750,11.8000],[47.0700,11.5500],
+       [47.0750,10.9650],
+       [47.1100,11.1500],[47.1600,11.2500],[47.2000,11.3200],[47.2692,11.4041]],
+
+  // יום 7: אינסברוק → A12 מזרח → Wörgl → B173 → St. Johann in Tirol → חזרה
+  m6: [[47.2692,11.4041],[47.2800,11.5200],[47.2900,11.6500],[47.3100,11.7800],
+       [47.3500,11.9200],[47.3900,12.0500],[47.4300,12.1800],
+       [47.4700,12.3000],[47.5000,12.3800],[47.5240,12.4220],
+       [47.5000,12.3800],[47.4700,12.3000],[47.4300,12.1800],
+       [47.3900,12.0500],[47.3500,11.9200],[47.3100,11.7800],
+       [47.2900,11.6500],[47.2800,11.5200],[47.2692,11.4041]],
+
+  // יום 8: אינסברוק → A12 מערב → Telfs → B189 Fernpass → Ehrwald → B179 → Reutte → B310 → Füssen → B17 → Immenstadt/Alpsee → A980/A96 → מינכן
+  m7: [[47.2692,11.4041],[47.2800,11.3000],[47.2950,11.2000],[47.3100,11.1000],
+       [47.3300,11.0000],[47.3550,10.9600],[47.3800,10.9300],[47.4070,10.9290],
+       [47.4350,10.8800],[47.4700,10.8200],[47.5050,10.7500],
+       [47.5300,10.7200],[47.5500,10.6600],[47.5620,10.2100],
+       [47.6000,10.2800],[47.6500,10.3800],[47.7000,10.5000],
+       [47.7500,10.6200],[47.8000,10.7500],[47.8700,10.9000],
+       [47.9500,11.1000],[48.0200,11.2500],[48.0900,11.3800],
+       [48.1351,11.5820]],
+
+  // יום 9: מינכן → A95 → Starnberg → B2 → Weilheim → B472 → Schongau → B17 → Füssen → Neuschwanstein → Alpsee → חזרה A96
+  m8: [[48.1351,11.5820],[48.0900,11.5200],[48.0000,11.4500],[47.9200,11.3500],
+       [47.8500,11.2500],[47.7800,11.0800],[47.7200,10.9500],
+       [47.6500,10.8500],[47.5800,10.7800],[47.5576,10.7498],
+       [47.5620,10.2100],
+       [47.6000,10.2800],[47.6600,10.4000],[47.7200,10.5500],
+       [47.7800,10.7000],[47.8400,10.8500],[47.9100,11.0200],
+       [47.9900,11.2000],[48.0700,11.3700],[48.1351,11.5820]],
+
+  // מסלול כללי: כל העצירות
+  overview: [[48.3537,11.7750],[48.2400,12.0300],[48.0650,12.4900],[47.8700,12.9100],[47.8095,13.0550],
+             [47.7200,13.0850],[47.6890,13.1010],[47.5230,13.2310],[47.8095,13.0550],
+             [47.7800,13.0700],[47.7300,13.2200],[47.7680,13.3650],
+             [47.7380,13.4510],[47.7680,13.3650],
+             [47.7500,13.3200],[47.6500,13.0800],[47.5200,13.2000],[47.4000,13.3000],[47.3390,13.3890],
+             [47.3700,13.4500],[47.3300,13.7200],[47.2200,13.9100],
+             [47.0750,10.9650],[47.1600,11.1200],[47.2692,11.4041],
+             [47.3500,11.9200],[47.5240,12.4220],[47.3500,11.9200],[47.2692,11.4041],
+             [47.3300,11.0000],[47.4070,10.9290],[47.5620,10.2100],
+             [47.7000,10.5000],[47.9500,11.1000],[48.1351,11.5820],
+             [47.8500,11.2500],[47.5576,10.7498],[47.5620,10.2100],
+             [47.7800,11.0800],[48.0700,11.3700],[48.1351,11.5820]]
+};
+
+// ─── STOP MARKERS ───
+const STOPS = {
+  m0: [[48.3537,11.7750,'שדה התעופה מינכן','✈️','#1f5233'],[47.8095,13.0550,'זלצבורג','🏨','#8b2020']],
+  m1: [[47.7950,13.0470,'מבצר Hohensalzburg','🏰','#1f5233'],[47.6890,13.1010,'Salzwelten מכרה מלח','⛏️','#c49a2b'],[47.5230,13.2310,'Liechtensteinklamm','🌊','#2e7d9e'],[47.8095,13.0550,'זלצבורג','🏨','#8b2020']],
+  m2: [[47.8095,13.0550,'זלצבורג','🚗','#1f5233'],[47.5930,12.9870,'אגם קניגסזה','⛵','#2e7d9e'],[47.7680,13.3650,'St. Gilgen','🏨','#8b2020']],
+  m3: [[47.7680,13.3650,'St. Gilgen','🚵','#1f5233'],[47.7380,13.4510,'St. Wolfgang','☕','#c49a2b'],[47.7520,13.4440,'Schafberg רכבל','🚠','#2e7d9e'],[47.7680,13.3650,'חזרה St. Gilgen','🏨','#8b2020']],
+  m4: [[47.7680,13.3650,'St. Gilgen','🚗','#1f5233'],[47.3390,13.3890,'פלכאו','🏘️','#c49a2b'],[47.3370,13.3820,'Lucky Flitzer','🛷','#8b2020']],
+  m5day2: [[47.3390,13.3890,'פלכאו','🏘️','#1f5233'],[47.3500,13.3700,'מסלול E-Bike','🚵','#c49a2b'],[47.3390,13.3800,'Badesee Flachauwinkl','🏊','#2e7d9e']],
+  m6: [[47.2692,11.4041,'אינסברוק','🚗','#1f5233'],[47.5240,12.4220,'Hornpark St. Johann','🌲','#c49a2b'],[47.2692,11.4041,'חזרה אינסברוק','🏔️','#8b2020']],
+  m7: [[47.2692,11.4041,'אינסברוק','🚗','#1f5233'],[47.4070,10.9290,'Ehrwald Zugspitze','🏔️','#c49a2b'],[47.5620,10.2100,'אגם Alpsee','🌊','#2e7d9e'],[48.1351,11.5820,'מינכן','🏙️','#8b2020']],
+  m8: [[48.1351,11.5820,'מינכן','🚗','#1f5233'],[47.5576,10.7498,'נוישוואנשטיין','🏰','#c49a2b'],[47.5620,10.2100,'אגם Alpsee','🌊','#2e7d9e'],[48.1351,11.5820,'חזרה מינכן','🏙️','#8b2020']],
+  overview: [
+    [48.3537,11.7750,'מינכן שדה תעופה','✈️','#1f5233'],
+    [47.8095,13.0550,'זלצבורג','🏰','#c49a2b'],
+    [47.7680,13.3650,'St. Gilgen','🌊','#2e7d9e'],
+    [47.3390,13.3890,'פלכאו','🛷','#c49a2b'],
+    [47.0750,10.9650,'Aqua Dome','💧','#2e7d9e'],
+    [47.2692,11.4041,'אינסברוק','🏔️','#c49a2b'],
+    [47.5240,12.4220,'Hornpark','🌲','#1f5233'],
+    [47.4070,10.9290,'Ehrwald','🏔️','#5a9470'],
+    [47.5620,10.2100,'Alpsee','🌊','#2e7d9e'],
+    [47.5576,10.7498,'נוישוואנשטיין','🏰','#c49a2b'],
+    [48.1351,11.5820,'מינכן','🏙️','#8b2020']
+  ]
+};
+
+const COLORS = {
+  m0:'#1f5233',m1:'#1f5233',m2:'#2e7d9e',m3:'#2e7d9e',m4:'#c49a2b',
+  m5day2:'#1a7a3f',m5:'#1f5233',m6:'#1a7a3f',m7:'#2e7d9e',m8:'#c49a2b',overview:'#c49a2b'
+};
+
+// ─── MAP INSTANCES ───
+const mapInstances = {};
+
+function makeIcon(emoji, color){
+  return L.divIcon({
+    html:`<div style="background:${color};color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.4);">${emoji}</div>`,
+    iconSize:[36,36],iconAnchor:[18,18],popupAnchor:[0,-22],className:''
+  });
+}
+
+function initMap(id){
+  const divId = 'lmap_' + id;
+  const el = document.getElementById(divId);
+  if(!el || mapInstances[id]) return;
+
+  const route = ROUTES[id];
+  const stops = STOPS[id];
+  if(!route || !stops) return;
+
+  const map = L.map(divId, {zoomControl:true, attributionControl:true});
+  mapInstances[id] = map;
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom:18
+  }).addTo(map);
+
+  // Draw road route
+  const polyline = L.polyline(route, {
+    color: COLORS[id],
+    weight: 5,
+    opacity: 0.85,
+    lineJoin: 'round',
+    lineCap: 'round'
+  }).addTo(map);
+
+  // Add markers
+  stops.forEach(([lat,lng,label,emoji,color])=>{
+    L.marker([lat,lng],{icon:makeIcon(emoji,color)})
+      .addTo(map)
+      .bindPopup(`<b>${emoji} ${label}</b>`);
+  });
+
+  // Fit to route
+  map.fitBounds(polyline.getBounds(), {padding:[30,30]});
+}
+
+function toggleMap(id){
+  const el=document.getElementById(id);
+  const was=el.classList.contains('open');
+  document.querySelectorAll('.map-wrap').forEach(m=>m.classList.remove('open'));
+  if(!was){
+    el.classList.add('open');
+    setTimeout(()=>initMap(id), 80);
+  }
+}
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
